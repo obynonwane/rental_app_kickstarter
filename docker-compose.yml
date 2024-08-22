@@ -1,0 +1,156 @@
+services:
+  broker-service:
+    build:
+      context: ../broker-service
+      dockerfile: ../broker-service/Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+
+  authentication:
+    build:
+      context: ../auth-service
+      dockerfile: ../auth-service/Dockerfile
+    restart: always
+    container_name: auth-service
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+    volumes:
+      - ../auth-service:/app
+    depends_on:
+      - db_init
+    # command:
+    #   - "/bin/sh"
+    #   - "-c"
+    #   - "npm run typeorm:run-migrations && npm run start:dev"
+
+  subscription:
+    build:
+      context: ../subscription-service
+      dockerfile: ../subscription-service/Dockerfile
+    restart: always
+    container_name: subscription-service
+    ports:
+      - "5002:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+    volumes:
+      - ../subscription-service:/app
+    depends_on:
+      - postgres
+
+  mail-service:
+    build:
+      context: ../mail-service
+      dockerfile: ../mail-service/Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+
+  listener-service:
+    build:
+      context: ../listener-service
+      dockerfile: ../listener-service/Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+
+  logging-service:
+    build:
+      context: ../logging-service
+      dockerfile: ../logging-service/Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    env_file:
+      - docker.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  db_init:
+    image: postgres:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    entrypoint:
+      [
+        "sh",
+        "-c",
+        "until pg_isready -h postgres -U ${POSTGRES_USER}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD} createdb -h postgres -U ${POSTGRES_USER} --owner=${POSTGRES_USER} ${POSTGRES_DB}",
+      ]
+
+  mailhog:
+    image: "mailhog/mailhog:latest"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ default port
+      - "15672:15672" # RabbitMQ management console
+    environment:
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+
+  mongo:
+    image: "mongo:4.2.16-bionic"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: "${MONGO_INITDB_DATABASE}"
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD}"
+    volumes:
+      - ./data/mongo/:/data/db
+
+  redis:
+    image: "redis:latest"
+    container_name: "redis"
+    ports:
+      - "6379:6379"
