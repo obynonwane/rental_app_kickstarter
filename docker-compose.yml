@@ -83,6 +83,17 @@ services:
     env_file:
       - .env
 
+  inventory-service:
+    build:
+      context: ../inventory-service
+      dockerfile: ../inventory-service/Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file:
+      - .env
+
   postgres:
     image: postgres:latest
     container_name: postgres

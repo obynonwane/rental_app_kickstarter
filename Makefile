@@ -3,6 +3,7 @@ MAIL_BINARY=mailApp
 BROKER_BINARY=brokerApp
 LISTENER_BINARY=listenerApp
 LOGGING_BINARY=loggingApp
+INVENTORY_BINARY=inventoryApp
 
 # Images name to be pushed to docker hub
 SUBSCRIPTION_IMAGE := biostech/rental-subscription-service:1.0.0
@@ -11,6 +12,7 @@ MAIL_IMAGE := biostech/rental-mail-service:1.0.0
 BROKER_IMAGE := biostech/rental-broker-service:1.0.0
 LISTENER_IMAGE := biostech/rental-listener-service:1.0.0
 LOGGING_IMAGE := biostech/rental-logging-service:1.0.0
+INVENTORY_IMAGE := biostech/rental-inventory-service:1.0.0
 
 # up: starts all containers in the background without forcing build
 up: ## Start all containers in the background without forcing build
@@ -25,7 +27,7 @@ down: ## Stop Docker Compose
 	@echo "Done!"
 
 # up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build:  build_mail_service build_broker_service build_listener_service build_logging_service ## Stop, build, and start Docker Compose
+up_build:  build_mail_service build_broker_service build_listener_service build_logging_service build_inventory_service ## Stop, build, and start Docker Compose
 	@echo "Stopping Docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting Docker images..."
@@ -62,6 +64,12 @@ build_logging_service: ## Build the logging service binary
 	@cd ../logging-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LOGGING_BINARY} ./cmd/api
 	@echo "Done!"
 
+# build_inventory_service: builds the inventory binary as a linux executable
+build_inventory_service: ## Build the inventory service binary
+	@echo "Building inventory service binary..."
+	@cd ../inventory-service && env GOOS=linux CGO_ENABLED=0 go build -o ${INVENTORY_BINARY} ./cmd/api
+	@echo "Done!"
+
 # push_subscription: push subscription service to docker hub
 build_push_subscription: ## Push the subscription service to Docker Hub
 	cd ../subscription-service/ && docker build --no-cache -f Dockerfile -t $(SUBSCRIPTION_IMAGE) . && docker push $(SUBSCRIPTION_IMAGE)
@@ -86,8 +94,12 @@ build_push_listener_service: ## Push the listener service to Docker Hub
 build_push_logging_service: ## Push the logging service to Docker Hub
 	cd ../logging-service/ && docker build --no-cache -f Dockerfile -t $(LOGGING_IMAGE) . && docker push $(LOGGING_IMAGE)
 
+# push_inventory_service: push inventory service to docker hub
+build_push_inventory_service: ## Push the inventory service to Docker Hub
+	cd ../inventory-service/ && docker build --no-cache -f Dockerfile -t $(INVENTORY_IMAGE) . && docker push $(INVENTORY_IMAGE)
+
 # build_push: push all images to docker hub
-build_push: build_push_authentication_service build_push_subscription build_push_mail_service build_push_broker_service build_push_listener_service build_push_logging_service ## Build and push all images to Docker Hub
+build_push: build_push_authentication_service build_push_subscription build_push_mail_service build_push_broker_service build_push_listener_service build_push_logging_service build_push_inventory_service ## Build and push all images to Docker Hub
 	@echo "Building and pushing updated images"
 
 # migrate_up_local: apply all migrations locally
@@ -118,6 +130,7 @@ migrate: ## Create a new migration file
 # Variables
 BRANCH ?= main
 
+# make commit_name message="commit message"
 # commit_broker: pushes broker service to github
 commit_broker: ## commit_broker: pushes broker service to github
 	@if [ "$(message)" = "" ]; then echo "Commit message required"; exit 1; fi
@@ -174,6 +187,15 @@ commit_db: ## commit_db: push project database sql to github
 	@cd ../db && git commit -m "$(message)"
 	@cd ../db && git push origin $(BRANCH)
 
+# commit_inventory: push inventory service to github
+commit_inventory: ## commit_inventory: push inventory service to github
+	@if [ "$(message)" = "" ]; then echo "Commit message required"; exit 1; fi
+	@cd ../inventory-service && git status
+	@cd ../inventory-service && git add .
+	@cd ../inventory-service && git commit -m "$(message)"
+	@cd ../inventory-service && git push origin $(BRANCH)
+
+
 # commit_setup: push project setup to github
 commit_setup: ## push project setup to github
 	@if [ "$(message)" = "" ]; then echo "Commit message required"; exit 1; fi
@@ -190,7 +212,8 @@ help: ## Show this help
 .PHONY: migrate createdb dropdb migrate_down_last_local migrate_down_local migrate_up_local build_push build_push_logging_service \
 		build_push_listener_service build_push_broker_service build_push_mail_service build_push_authentication_service build_push_subscription \
 		build_logging_service build_listener_service build_broker_service build_mail_service build_subscription_service up_build down up help \
-		commit_setup commit_subscription commit_mail commit_logging commit_listener commit_auth commit_broker commit_db
+		commit_setup commit_subscription commit_mail commit_logging commit_listener commit_auth commit_broker commit_db build_push_inventory_service\
+		build_inventory_service
 
 
 
@@ -200,3 +223,4 @@ help: ## Show this help
 #2. react-navigation   https://reactnavigation.org/docs/getting-started
 #3. screen components get {route, navigation } props automatically
 #4. icons -  https://docs.expo.dev/guides/icons/
+# cd cmp/api go test -v .
