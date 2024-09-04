@@ -17,21 +17,21 @@ INVENTORY_IMAGE := biostech/rental-inventory-service:1.0.0
 # up: starts all containers in the background without forcing build
 up: ## Start all containers in the background without forcing build
 	@echo "Starting Docker images..."
-	docker-compose up -d
+	docker compose up -d
 	@echo "Docker images started!"
 
 # down: stop docker compose
 down: ## Stop Docker Compose
 	@echo "Stopping Docker Compose..."
-	docker-compose down
+	docker compose down
 	@echo "Done!"
 
-# up_build: stops docker-compose (if running), builds all projects and starts docker compose
+# up_build: stops docker compose (if running), builds all projects and starts docker compose
 up_build:  build_mail_service build_broker_service build_listener_service build_logging_service build_inventory_service ## Stop, build, and start Docker Compose
 	@echo "Stopping Docker images (if running...)"
-	docker-compose down
+	docker compose down
 	@echo "Building (when required) and starting Docker images..."
-	docker-compose up --build
+	docker compose up --build
 	@echo "Docker images built and started!"
 
 # build_subscription_service: builds the subscription binary as a linux executable
@@ -122,9 +122,9 @@ dropdb: ## Drop the database
 createdb: ## Create the database
 	docker exec -it postgres createdb --username=admin --owner=admin rental_solution_db
 
-# migrate: create a new migration file
+# migrate: create a new migration file e.g make migrate schema=<migration_name>
 MIGRATE_CMD = migrate create -ext sql -dir ../db/migrations -seq
-migrate: ## Create a new migration file
+migrate: ## Create a new migration file e.g make migrate schema=<migration_name>
 	@$(MIGRATE_CMD) $(schema)
 
 # Variables

@@ -1,0 +1,62 @@
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  scrape_timeout: 10s
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "broker-service"
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    scheme: 'http'
+    follow_redirects: true
+    static_configs:
+      - targets: 
+         - broker-service:8080
+        # - host.docker.internal:8080
+
+  - job_name: "mail-service"
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    scheme: 'http'
+    static_configs:
+      - targets:
+        - mail-service:80 
+
+  - job_name: "logging-service"
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    scheme: 'http'
+    static_configs:
+      - targets:
+        - logging-service:80 
+
+  - job_name: "inventory-service"
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    scheme: 'http'
+    static_configs:
+      - targets:
+        - inventory-service:80 
+
+  - job_name: "authentication-service"
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/api/v1/metrics'
+    scheme: 'http'
+    static_configs:
+      - targets:
+        - authentication:80 
+
+  - job_name: "subscription-service"
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    scheme: 'http'
+    static_configs:
+      - targets:
+        - subscription:5002 

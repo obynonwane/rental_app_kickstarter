@@ -38,8 +38,6 @@ services:
       dockerfile: ../subscription-service/Dockerfile
     restart: always
     container_name: subscription-service
-    ports:
-      - "5002:80"
     deploy:
       mode: replicated
       replicas: 1
@@ -165,3 +163,21 @@ services:
     container_name: "redis"
     ports:
       - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./.config/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - ./data/grafana:/var/lib/grafana
