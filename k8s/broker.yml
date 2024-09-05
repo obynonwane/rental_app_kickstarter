@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broker-service
+  labels:
+    app: broker-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker-service
+  template:
+    metadata:
+      labels:
+        app: broker-service
+    spec:
+      containers:
+      - name: broker-service
+        image: "biostech/rental-broker-service:1.0.0"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: broker-config
+              key: REDIS_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker-service
+  labels:
+    app: broker-service
+spec:
+  ports:
+    - protocol: TCP
+      name: main-port
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: broker-service
