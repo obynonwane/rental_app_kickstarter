@@ -14,6 +14,10 @@ spec:
       labels:
         app: broker-service
     spec:
+      initContainers:
+      - name: wait-for-redis
+        image: busybox
+        command: ['sh', '-c', 'until nc -z redis 6379; do echo Waiting for Redis; sleep 2; done;']
       containers:
       - name: broker-service
         image: "biostech/rental-broker-service:1.0.0"
@@ -23,7 +27,7 @@ spec:
         - name: REDIS_URL
           valueFrom:
             configMapKeyRef:
-              name: broker-config
+              name: app-config
               key: REDIS_URL
         resources:
           requests:
@@ -32,7 +36,6 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-
 
 ---
 apiVersion: v1

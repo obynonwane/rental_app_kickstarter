@@ -1,24 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: mailhog
   labels:
-    app: redis
+    app: mailhog
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: mailhog
   template:
     metadata:
       labels:
-        app: redis
+        app: mailhog
     spec:
       containers:
-      - name: redis
-        image: "redis:latest"   # Redis image
+      - name: mailhog
+        image: "mailhog/mailhog:latest"   
         ports:
-        - containerPort: 6379
+        - containerPort: 1025            
+        - containerPort: 8025           
         resources:
           requests:
             memory: "256Mi"
@@ -31,14 +32,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: mailhog
   labels:
-    app: redis
+    app: mailhog
 spec:
   ports:
     - protocol: TCP
-      name: main-port
-      port: 6379
-      targetPort: 6379
+      name: smtp-port
+      port: 1025
+      targetPort: 1025
+    - protocol: TCP
+      name: web-port
+      port: 8025
+      targetPort: 8025
   selector:
-    app: redis
+    app: mailhog

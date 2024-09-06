@@ -218,6 +218,14 @@ help: ## Show this help
 
 
 
+#----------------------------------------Kubernetes commands-----------------------------------------------#
+# encode a secret - base64: echo -n 'redis' | base64
+# decode a secret - base64: echo 'cmVkaXMuCg==' | base64 --decode; echo
+# decode a secret - kubectl: kubectl get secret secret -o jsonpath="{.data.REDIS_URL}" | base64 --decode
+
+
+
+
 #------------------------------------Packages installed for react-native app-----------------------------------------#
 #1. create reat-app - expo init my-new-project
 #2. react-navigation   https://reactnavigation.org/docs/getting-started

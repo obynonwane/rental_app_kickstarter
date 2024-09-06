@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: logging-service
+  labels:
+    app: logging-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logging-service
+  template:
+    metadata:
+      labels:
+        app: logging-service
+    spec:
+      containers:
+      - name: logging-service
+        image: "biostech/rental-logging-service:1.0.0"
+        ports:
+        - containerPort: 80                # Internal port 80 as per docker-compose config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logging-service
+  labels:
+    app: logging-service
+spec:
+  type: ClusterIP              # Only accessible within the cluster
+  selector:
+    app: logging-service
+  ports:
+    - protocol: TCP
+      port: 80                 # Cluster-internal port
+      targetPort: 80            # Mail service's container port
