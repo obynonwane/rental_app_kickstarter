@@ -29,6 +29,21 @@ spec:
             configMapKeyRef:
               name: app-config
               key: REDIS_URL
+        - name: INVENTORY_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: INVENTORY_SERVICE_URL
+        - name: AUTH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: AUTH_URL
+        - name: MAIL_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: MAIL_URL
         resources:
           requests:
             memory: "256Mi"

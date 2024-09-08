@@ -1,9 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: listener-service
-  labels:
-    app: listener-service
 spec:
   replicas: 1
   selector:
@@ -17,8 +15,6 @@ spec:
       containers:
       - name: listener-service
         image: "biostech/rental-listener-service:1.0.0"
-        ports:
-        - containerPort: 80                # Internal port 80 as per docker-compose config
         resources:
           requests:
             memory: "256Mi"
@@ -26,6 +22,25 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        ports:
+          - containerPort: 80
+        env:
+        - name: FROM_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: FROM_ADDRESS 
+        - name: LOGGER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOGGER_URL  
+        - name: MAIL_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: MAIL_URL    
+
 
 ---
 apiVersion: v1
@@ -35,10 +50,11 @@ metadata:
   labels:
     app: listener-service
 spec:
-  type: ClusterIP              # Only accessible within the cluster
+  type: ClusterIP             
   selector:
     app: listener-service
   ports:
     - protocol: TCP
-      port: 80                 # Cluster-internal port
-      targetPort: 80            # Mail service's container port
+      name: web-port
+      port: 80                
+      targetPort: 80      

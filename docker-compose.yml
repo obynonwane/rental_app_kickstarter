@@ -12,7 +12,7 @@ services:
     env_file:
       - .env
 
-  authentication:
+  authentication-service:
     build:
       context: ../auth-service
       dockerfile: ../auth-service/Dockerfile
