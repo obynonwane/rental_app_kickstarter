@@ -21,6 +21,7 @@ spec:
       containers:
       - name: broker-service
         image: "biostech/rental-broker-service:1.0.0"
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
