@@ -11,6 +11,8 @@ services:
       replicas: 1
     env_file:
       - .env
+    volumes:
+      - ../broker-service:/app # Only for development
 
   authentication-service:
     build:
