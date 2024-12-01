@@ -133,6 +133,49 @@ services:
         "until pg_isready -h postgres -U ${POSTGRES_USER}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD} createdb -h postgres -U ${POSTGRES_USER} --owner=${POSTGRES_USER} ${POSTGRES_DB}",
       ]
 
+  test-postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER_TEST}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD_TEST}"
+      POSTGRES_DB: "${POSTGRES_DB_TEST}"
+    volumes:
+      - ./data/postgres_test:/var/lib/postgresql/data
+    env_file:
+      - docker.env
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -q -d ${POSTGRES_DB_TEST} -U ${POSTGRES_USER_TEST}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  test_postgres_init:
+    image: postgres:latest
+    depends_on:
+      test-postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER_TEST}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD_TEST}"
+      POSTGRES_DB: "${POSTGRES_DB_TEST}"
+    entrypoint:
+      [
+        "sh",
+        "-c",
+        "until pg_isready -h postgres -U ${POSTGRES_USER_TEST}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD_TEST} createdb -h postgres -U ${POSTGRES_USER_TEST} --owner=${POSTGRES_USER_TEST} ${POSTGRES_DB_TEST}",
+      ]
+
   mailhog:
     image: "mailhog/mailhog:latest"
     ports:

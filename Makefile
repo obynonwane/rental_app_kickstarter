@@ -128,7 +128,7 @@ migrate: ## Create a new migration file e.g make migrate schema=<migration_name>
 	@$(MIGRATE_CMD) $(schema)
 
 # Variables
-BRANCH ?= main
+BRANCH ?= develop
 
 # make commit_name message="commit message"
 # commit_broker: pushes broker service to github
