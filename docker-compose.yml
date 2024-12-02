@@ -135,7 +135,7 @@ services:
 
   test-postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: test-postgres
     ports:
       - "5433:5432"
     restart: always
@@ -173,7 +173,7 @@ services:
       [
         "sh",
         "-c",
-        "until pg_isready -h postgres -U ${POSTGRES_USER_TEST}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD_TEST} createdb -h postgres -U ${POSTGRES_USER_TEST} --owner=${POSTGRES_USER_TEST} ${POSTGRES_DB_TEST}",
+        "until pg_isready -h test-postgres -U ${POSTGRES_USER_TEST}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD_TEST} createdb -h test-postgres -U ${POSTGRES_USER_TEST} --owner=${POSTGRES_USER_TEST} ${POSTGRES_DB_TEST}",
       ]
 
   mailhog:

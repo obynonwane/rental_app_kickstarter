@@ -218,6 +218,7 @@ help: ## Show this help
 
 
 
+
 #----------------------------------------Kubernetes commands-----------------------------------------------#
 # encode a secret - base64: echo -n 'redis' | base64
 # decode a secret - base64: echo 'cmVkaXMuCg==' | base64 --decode; echo
@@ -226,9 +227,31 @@ help: ## Show this help
 
 
 
-#------------------------------------Packages installed for react-native app-----------------------------------------#
+#---------------------------------------------------Packages installed for react-native app---------------------------------------------#
 #1. create reat-app - expo init my-new-project
 #2. react-navigation   https://reactnavigation.org/docs/getting-started
 #3. screen components get {route, navigation } props automatically
 #4. icons -  https://docs.expo.dev/guides/icons/
 # cd cmp/api go test -v .
+
+
+#--------------------------------------------------TEST DB OPERATIONS-------------------------------------------------------------------#
+# migrate_up_local: apply all migrations locally
+migrate_up_local_test: ## Apply all migrations locally
+	migrate -path ../db/migrations -database "postgresql://admin:password@localhost:5433/rental_solution_test_db?sslmode=disable" -verbose up
+
+# migrate_down_local: rollback all migrations locally
+migrate_down_local_test: ## Rollback all migrations locally
+	migrate -path ../db/migrations -database "postgresql://admin:password@localhost:5433/rental_solution_test_db?sslmode=disable" -verbose down
+
+# migrate_down_last_local: rollback the last migration locally
+migrate_down_last_local_test: ## Rollback the last migration locally
+	migrate -path ../db/migrations -database "postgresql://admin:password@localhost:5433/rental_solution_test_db?sslmode=disable" -verbose down 1
+
+# dropdb: drop the database
+dropdb_test: ## Drop the database
+	docker exec -it test-postgres dropdb -U admin rental_solution_test_db
+
+# createdb: create the database
+createdb_test: ## Create the database
+	docker exec -it test-postgres createdb --username=admin --owner=admin rental_solution_test_db
