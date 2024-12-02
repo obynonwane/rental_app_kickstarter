@@ -25,6 +25,7 @@ services:
       replicas: 1
     env_file:
       - .env
+      - .env.${NODE_ENV} # Dynamically load based on NODE_ENV value
     volumes:
       - ../auth-service:/app
     depends_on:
@@ -133,9 +134,9 @@ services:
         "until pg_isready -h postgres -U ${POSTGRES_USER}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD} createdb -h postgres -U ${POSTGRES_USER} --owner=${POSTGRES_USER} ${POSTGRES_DB}",
       ]
 
-  test-postgres:
+  test_postgres:
     image: postgres:latest
-    container_name: test-postgres
+    container_name: test_postgres
     ports:
       - "5433:5432"
     restart: always
@@ -163,7 +164,7 @@ services:
   test_postgres_init:
     image: postgres:latest
     depends_on:
-      test-postgres:
+      test_postgres:
         condition: service_healthy
     environment:
       POSTGRES_USER: "${POSTGRES_USER_TEST}"
@@ -173,7 +174,7 @@ services:
       [
         "sh",
         "-c",
-        "until pg_isready -h test-postgres -U ${POSTGRES_USER_TEST}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD_TEST} createdb -h test-postgres -U ${POSTGRES_USER_TEST} --owner=${POSTGRES_USER_TEST} ${POSTGRES_DB_TEST}",
+        "until pg_isready -h test_postgres -U ${POSTGRES_USER_TEST}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD_TEST} createdb -h test_postgres -U ${POSTGRES_USER_TEST} --owner=${POSTGRES_USER_TEST} ${POSTGRES_DB_TEST}",
       ]
 
   mailhog:
