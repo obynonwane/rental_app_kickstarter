@@ -11,8 +11,36 @@ services:
       replicas: 1
     env_file:
       - .env
+      - .env.${DEV_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
     volumes:
       - ../broker-service:/app # Only for development
+    depends_on:
+      - authentication-service
+    # environment:
+    #   - AUTH_PATH=http://authentication-service/api/v1/authentication/signup
+
+  # authentication-service:
+  #   build:
+  #     context: ../auth-service
+  #     dockerfile: ../auth-service/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "5001:5001"
+  #   container_name: auth-service
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #   env_file:
+  #     - .env
+  #     - .env.${NODE_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
+  #   volumes:
+  #     - ../auth-service:/app
+  #   depends_on:
+  #     - db_init
+  #   # command:
+  #   #   - "/bin/sh"
+  #   #   - "-c"
+  #   #   - "npm run typeorm:run-migrations && npm run start:dev"
 
   authentication-service:
     build:
@@ -25,7 +53,7 @@ services:
       replicas: 1
     env_file:
       - .env
-      - .env.${NODE_ENV} # Dynamically load based on NODE_ENV value
+      - .env.${NODE_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
     volumes:
       - ../auth-service:/app
     depends_on:
@@ -94,6 +122,9 @@ services:
       replicas: 1
     env_file:
       - .env
+      - .env.${DEV_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
+    volumes:
+      - ../inventory-service:/app # Only for development
 
   postgres:
     image: postgres:latest
@@ -144,37 +175,51 @@ services:
       mode: replicated
       replicas: 1
     environment:
-      POSTGRES_USER: "${POSTGRES_USER_TEST}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD_TEST}"
-      POSTGRES_DB: "${POSTGRES_DB_TEST}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     volumes:
       - ./data/postgres_test:/var/lib/postgresql/data
     env_file:
-      - docker.env
+      - .env.test # Ensure the .env.test file is being used
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -q -d ${POSTGRES_DB_TEST} -U ${POSTGRES_USER_TEST}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -q -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 3
 
+  # test_postgres_init:
+  #   image: postgres:latest
+  #   depends_on:
+  #     test_postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     POSTGRES_USER: "${POSTGRES_USER}"
+  #     POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+  #     POSTGRES_DB: "${POSTGRES_DB}"
+  #   env_file:
+  #     - .env.test # Ensure the .env.test file is being used
+  #   entrypoint:
+  #     [
+  #       "sh",
+  #       "-c",
+  #       "until pg_isready -h test_postgres -U ${POSTGRES_USER}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD} createdb -h test_postgres -U ${POSTGRES_USER} --owner=${POSTGRES_USER} ${POSTGRES_DB}",
+  #     ]
   test_postgres_init:
     image: postgres:latest
     depends_on:
       test_postgres:
         condition: service_healthy
     environment:
-      POSTGRES_USER: "${POSTGRES_USER_TEST}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD_TEST}"
-      POSTGRES_DB: "${POSTGRES_DB_TEST}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    env_file:
+      - .env.test
     entrypoint:
       [
         "sh",
         "-c",
-        "until pg_isready -h test_postgres -U ${POSTGRES_USER_TEST}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD_TEST} createdb -h test_postgres -U ${POSTGRES_USER_TEST} --owner=${POSTGRES_USER_TEST} ${POSTGRES_DB_TEST}",
+        "until pg_isready -h test_postgres -U ${POSTGRES_USER}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD} createdb -h test_postgres -U ${POSTGRES_USER} --owner=${POSTGRES_USER} rental_solution_test_db",
       ]
 
   mailhog:

@@ -235,7 +235,7 @@ help: ## Show this help
 # cd cmp/api go test -v .
 
 
-#--------------------------------------------------TEST DB OPERATIONS-------------------------------------------------------------------#
+#-----------------------------------------------------------TEST DB OPERATIONS - Using Docker-----------------------------------------------------------#
 # migrate_up_local: apply all migrations locally
 migrate_up_local_test: ## Apply all migrations locally
 	migrate -path ../db/migrations -database "postgresql://admin:password@localhost:5433/rental_solution_test_db?sslmode=disable" -verbose up
@@ -250,8 +250,30 @@ migrate_down_last_local_test: ## Rollback the last migration locally
 
 # dropdb: drop the database
 dropdb_test: ## Drop the database
-	docker exec -it test-postgres dropdb -U admin rental_solution_test_db
+	docker exec -it test_postgres dropdb -U admin rental_solution_test_db
 
 # createdb: create the database
 createdb_test: ## Create the database
-	docker exec -it test-postgres createdb --username=admin --owner=admin rental_solution_test_db
+	docker exec -it test_postgres createdb --username=admin --owner=admin rental_solution_test_db
+
+
+#-----------------------------------------------------------TEST DB OPERATIONS - Using Hosted DB-----------------------------------------------------------#
+# migrate_up_local: apply all migrations locally
+migrate_up_hosted: ## Apply all migrations locally
+	migrate -path ../db/migrations -database "postgresql://postgres.xfbfiuuiejvuvhvlnhot:passgfhdgsfQwtevv@aws-0-eu-central-1.pooler.supabase.com:5432/postgres" -verbose up
+
+# migrate_down_local: rollback all migrations locally
+migrate_down_hosted: ## Rollback all migrations locally
+	migrate -path ../db/migrations -database "postgresql://postgres.xfbfiuuiejvuvhvlnhot:passgfhdgsfQwtevv@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=disable" -verbose down
+
+# migrate_down_last_local: rollback the last migration locally
+migrate_down_last_hosted: ## Rollback the last migration locally
+	migrate -path ../db/migrations -database "postgresql://postgres.xfbfiuuiejvuvhvlnhot:passgfhdgsfQwtevv@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=disable" -verbose down 1
+
+# dropdb: drop the database
+dropdb_hosted: ## Drop the database
+	docker exec -it test_postgres dropdb -U admin rental_solution_test_db
+
+# createdb: create the database
+createdb_hosted: ## Create the database
+	docker exec -it test_postgres createdb --username=admin --owner=admin rental_solution_test_db
