@@ -19,29 +19,6 @@ services:
     # environment:
     #   - AUTH_PATH=http://authentication-service/api/v1/authentication/signup
 
-  # authentication-service:
-  #   build:
-  #     context: ../auth-service
-  #     dockerfile: ../auth-service/Dockerfile
-  #   restart: always
-  #   ports:
-  #     - "5001:5001"
-  #   container_name: auth-service
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #   env_file:
-  #     - .env
-  #     - .env.${NODE_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
-  #   volumes:
-  #     - ../auth-service:/app
-  #   depends_on:
-  #     - db_init
-  #   # command:
-  #   #   - "/bin/sh"
-  #   #   - "-c"
-  #   #   - "npm run typeorm:run-migrations && npm run start:dev"
-
   authentication-service:
     build:
       context: ../auth-service

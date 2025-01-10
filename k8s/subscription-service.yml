@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: authentication-service
+  name: subscription-service
   labels:
-    app: authentication-service
+    app: subscription-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: authentication-service
+      app: subscription-service
   template:
     metadata:
       labels:
-        app: authentication-service
+        app: subscription-service
     spec:
       containers:
         - name: authentication-service
-          image: "biostech/rental-authentication-service:1.0.0"
+          image: "biostech/rental-subscription-service:1.0.0"
           ports:
             - containerPort: 80
           env:
@@ -50,21 +50,6 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: REDIS_URL
-            - name: JWT_SECRET
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: JWT_SECRET
-            - name: JWT_EXPIRATION_TIME
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: JWT_EXPIRATION_TIME
-            - name: JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
             - name: RABBITMQ_URL
               valueFrom:
                 configMapKeyRef:
@@ -87,14 +72,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: authentication-service
+  name: subscription-service
   labels:
-    app: authentication-service
+    app: subscription-service
 spec:
-  type: ClusterIP
+  type: ClusterIP # Only accessible within the cluster
   selector:
-    app: authentication-service
+    app: subscription-service
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 80 # Cluster-internal port
+      targetPort: 80 # Mail service's container port

@@ -27,7 +27,7 @@ down: ## Stop Docker Compose
 	@echo "Done!"
 
 # up_build: stops docker compose (if running), builds all projects and starts docker compose
-up_build:  build_mail_service build_broker_service build_listener_service build_logging_service build_inventory_service ## Stop, build, and start Docker Compose
+up_build:  build_mail_service build_broker_service build_listener_service build_logging_service build_inventory_service build_subscription_service ## Stop, build, and start Docker Compose
 	@echo "Stopping Docker images (if running...)"
 	docker compose down
 	@echo "Building (when required) and starting Docker images..."

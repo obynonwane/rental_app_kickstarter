@@ -15,29 +15,29 @@ spec:
         app: rabbitmq
     spec:
       containers:
-      - name: rabbitmq
-        image: "rabbitmq:3-management"   # RabbitMQ image with management plugin
-        ports:
-        - containerPort: 5672            # AMQP port
-        - containerPort: 15672
-        env:
-        - name: RABBITMQ_DEFAULT_USER
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: RABBITMQ_DEFAULT_USER
-        - name: RABBITMQ_DEFAULT_PASS
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: RABBITMQ_DEFAULT_PASS        # Management plugin web UI port
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: rabbitmq
+          image: "rabbitmq:3-management" # RabbitMQ image with management plugin
+          ports:
+            - containerPort: 5672 # AMQP port
+            - containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RABBITMQ_DEFAULT_PASS # Management plugin web UI port
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 
 ---
 apiVersion: v1
