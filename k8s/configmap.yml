@@ -7,7 +7,8 @@ data:
   #DATABASE CONFIG Starts here------#
   DATABASE_NAME: "rental_solution_db"
   DATABASE_TYPE: "postgres"
-  DATABASE_HOST: "host.minikube.internal"
+  # DATABASE_HOST: "host.minikube.internal"
+  DATABASE_HOST: "host.docker.internal"
   DATABASE_PORT: "5432"
   DATABASE_USER: "admin"
   DATABASE_PASSWORD: "password"
@@ -46,4 +47,3 @@ data:
   MAIL_URL: "http://mail-service/"
   LOGGER_URL: "http://logging-service/log"
   INVENTORY_SERVICE_URL: "http://inventory-service/api/v1/"
-
