@@ -218,7 +218,6 @@ help: ## Show this help
 
 
 
-
 #----------------------------------------Kubernetes commands-----------------------------------------------#
 # encode a secret - base64: echo -n 'redis' | base64
 # decode a secret - base64: echo 'cmVkaXMuCg==' | base64 --decode; echo

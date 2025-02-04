@@ -11,7 +11,6 @@ services:
       replicas: 1
     env_file:
       - .env
-      - .env.${DEV_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
     volumes:
       - ../broker-service:/app # Only for development
     depends_on:
@@ -30,7 +29,6 @@ services:
       replicas: 1
     env_file:
       - .env
-      - .env.${NODE_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
     volumes:
       - ../auth-service:/app
     depends_on:
@@ -99,7 +97,6 @@ services:
       replicas: 1
     env_file:
       - .env
-      - .env.${DEV_ENV:-test} # Dynamically load based on NODE_ENV value and make it default to test
     volumes:
       - ../inventory-service:/app # Only for development
 
@@ -165,23 +162,6 @@ services:
       timeout: 5s
       retries: 3
 
-  # test_postgres_init:
-  #   image: postgres:latest
-  #   depends_on:
-  #     test_postgres:
-  #       condition: service_healthy
-  #   environment:
-  #     POSTGRES_USER: "${POSTGRES_USER}"
-  #     POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-  #     POSTGRES_DB: "${POSTGRES_DB}"
-  #   env_file:
-  #     - .env.test # Ensure the .env.test file is being used
-  #   entrypoint:
-  #     [
-  #       "sh",
-  #       "-c",
-  #       "until pg_isready -h test_postgres -U ${POSTGRES_USER}; do echo waiting for postgres; sleep 2; done; PGPASSWORD=${POSTGRES_PASSWORD} createdb -h test_postgres -U ${POSTGRES_USER} --owner=${POSTGRES_USER} ${POSTGRES_DB}",
-  #     ]
   test_postgres_init:
     image: postgres:latest
     depends_on:
