@@ -17,6 +17,7 @@ spec:
       containers:
         - name: authentication-service
           image: "biostech/rental-subscription-service:1.0.0"
+          imagePullPolicy: Always # Forces Kubernetes to pull every time
           ports:
             - containerPort: 80
           env:

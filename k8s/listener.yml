@@ -13,34 +13,34 @@ spec:
         app: listener-service
     spec:
       containers:
-      - name: listener-service
-        image: "biostech/rental-listener-service:1.0.0"
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        ports:
-          - containerPort: 80
-        env:
-        - name: FROM_ADDRESS
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: FROM_ADDRESS 
-        - name: LOGGER_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: LOGGER_URL  
-        - name: MAIL_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: MAIL_URL    
-
+        - name: listener-service
+          image: "biostech/rental-listener-service:1.0.0"
+          imagePullPolicy: Always # Forces Kubernetes to pull every time
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80
+          env:
+            - name: FROM_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: FROM_ADDRESS
+            - name: LOGGER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: LOGGER_URL
+            - name: MAIL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MAIL_URL
 
 ---
 apiVersion: v1
@@ -50,11 +50,11 @@ metadata:
   labels:
     app: listener-service
 spec:
-  type: ClusterIP             
+  type: ClusterIP
   selector:
     app: listener-service
   ports:
     - protocol: TCP
       name: web-port
-      port: 80                
-      targetPort: 80      
+      port: 80
+      targetPort: 80
