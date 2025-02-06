@@ -45,6 +45,21 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: DATABASE_NAME
+            - name: DATABASE_SSLMODE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_SSLMODE
+            - name: DATABASE_TIMEZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_TIMEZONE
+            - name: DATABASE_CONNECT_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_CONNECT_TIMEOUT
             - name: CLOUDINARY_CLOUD_NAME
               valueFrom:
                 configMapKeyRef:

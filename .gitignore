@@ -1,4 +1,4 @@
 .env
 .env.*
 data
-configmap.yml
+k8s/configmap.yml
