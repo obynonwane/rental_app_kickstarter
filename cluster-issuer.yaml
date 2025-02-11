@@ -14,7 +14,7 @@ spec:
             class: nginx
 
 
-#1. Install Cert Manager
+#1.  Install Cert-Manager (If Not Installed)
 # kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
 
 # 2. Verify Cert Manager 
@@ -32,3 +32,6 @@ spec:
 
 # 6. If there are errors, check Cert-Manager logs:
 # kubectl logs -n cert-manager -l app.kubernetes.io/name=cert-manager
+
+# 7.  Test HTTPS Access
+# curl -IL http://api.lendora.ng

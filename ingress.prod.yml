@@ -20,6 +20,8 @@ spec:
     - hosts:
         - api.lendora.ng
         - mailhog.lendora.ng
+        - rabbitmq.lendora.ng
+        - redis-ui.lendora.ng
       secretName: lendora-tls # Certificate stored here
   rules:
     - host: api.lendora.ng
@@ -42,3 +44,23 @@ spec:
                 name: mailhog
                 port:
                   number: 8025
+    - host: rabbitmq.lendora.ng
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq
+                port:
+                  number: 15672
+    - host: redis-ui.lendora.ng
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: redis-ui
+                port:
+                  number: 8081
