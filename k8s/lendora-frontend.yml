@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lendora-frontend
+  labels:
+    app: lendora-frontend
+spec:
+  replicas: 1  # Adjust replicas as needed
+  selector:
+    matchLabels:
+      app: lendora-frontend
+  template:
+    metadata:
+      labels:
+        app: lendora-frontend
+    spec:
+      containers:
+        - name: lendora-frontend
+          image: biostech/lendora-frontend:1.0.0
+          imagePullPolicy: Always # Forces Kubernetes to pull every time
+          ports:
+            - containerPort: 4000
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lendora-frontend
+  labels:
+    app: lendora-frontend
+spec:
+  selector:
+    app: lendora-frontend
+  ports:
+    - protocol: TCP
+      port: 80    # Expose port 80 to Ingress
+      targetPort: 4000  # Your container runs on port 4000
+  type: ClusterIP
+

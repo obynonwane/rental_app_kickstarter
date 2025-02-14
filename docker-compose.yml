@@ -230,3 +230,12 @@ services:
     restart: always
     volumes:
       - ./data/grafana:/var/lib/grafana
+
+  # lendora-frontend:
+  #   image: biostech/lendora-frontend:1.0.0
+  #   container_name: lendora-frontend
+  #   ports:
+  #     - "4000:4000"
+  #   environment:
+  #     - NODE_ENV=production
+  #   restart: always

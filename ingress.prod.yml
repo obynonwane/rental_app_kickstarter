@@ -13,17 +13,30 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"  # Force HTTPS
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
 
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
+        - lendora.ng
         - api.lendora.ng
         - mailhog.lendora.ng
         - rabbitmq.lendora.ng
         - redis-ui.lendora.ng
       secretName: lendora-tls # Certificate stored here
   rules:
+    - host: lendora.ng
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lendora-frontend
+                port:
+                  number: 4000
     - host: api.lendora.ng
       http:
         paths:

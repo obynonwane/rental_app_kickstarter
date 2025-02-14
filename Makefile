@@ -13,6 +13,7 @@ BROKER_IMAGE := biostech/rental-broker-service:1.0.0
 LISTENER_IMAGE := biostech/rental-listener-service:1.0.0
 LOGGING_IMAGE := biostech/rental-logging-service:1.0.0
 INVENTORY_IMAGE := biostech/rental-inventory-service:1.0.0
+LENDORA_FRONTEND_IMAGE := biostech/lendora-frontend:1.0.0
 
 # up: starts all containers in the background without forcing build
 up: ## Start all containers in the background without forcing build
@@ -101,6 +102,10 @@ build_push_inventory_service: ## Push the inventory service to Docker Hub
 # build_push: push all images to docker hub
 build_push: build_push_authentication_service build_push_subscription build_push_mail_service build_push_broker_service build_push_listener_service build_push_logging_service build_push_inventory_service ## Build and push all images to Docker Hub
 	@echo "Building and pushing updated images"
+
+# build_push: push all lendora frontend to dockerhub
+build_push_lendora_frontend:
+	cd ./lendora-frontend/ && docker build --no-cache -f Dockerfile -t $(LENDORA_FRONTEND_IMAGE) . && docker push $(LENDORA_FRONTEND_IMAGE)
 
 # migrate_up_local: apply all migrations locally
 migrate_up_local: ## Apply all migrations locally
